@@ -56,7 +56,6 @@ public class AppController {
     private void dashboard() throws Exception {
         boolean isRunning = true;
         while (isRunning) {
-            LoggerUtil.log("Entrando na Dashboard...");
 
             System.out.println("\nEscolha uma opção:");
             System.out.println("1 - Registro de Auditoria");
@@ -98,6 +97,8 @@ public class AppController {
             LoggerUtil.log("Hora: " + data + " | Informação: " + informacao + " | Descrição: " + descricao);
         }
 
+        System.out.println("\nTodos os registros foram exibidos.\n");
+
         rs.close();
         stmt.close();
     }
@@ -119,6 +120,8 @@ public class AppController {
             Timestamp data = rs.getTimestamp("data");
             LoggerUtil.log("Hora: " + data + " | Informação: " + informacao + " | Descrição: " + descricao);
         }
+
+        System.out.println("\nTodos os registros deste tipo foram exibidos.\n");
 
         rs.close();
         stmt.close();
