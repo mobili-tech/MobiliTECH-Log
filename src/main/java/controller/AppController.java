@@ -1,7 +1,6 @@
 package controller;
 
 import db.Conexao;
-import model.LinhaOnibus;
 import util.LoggerUtil;
 import util.TempoUtil;
 
@@ -54,46 +53,72 @@ public class AppController {
     }
 
     private void dashboard() throws Exception {
-        LoggerUtil.log("Entrando na Dashboard...");
+        boolean isRunning = true;
+        while (isRunning) {
+            LoggerUtil.log("Entrando na Dashboard...");
 
-        listarLinhas();
+            System.out.println("\nEscolha uma opção:");
+            System.out.println("1 - Registro de Auditoria");
+            System.out.println("2 - Consultar Logs por Tipo");
+            System.out.println("3 - Sair");
 
-        System.out.print("Deseja cadastrar nova linha? (S/N): ");
-        String resposta = scanner.nextLine();
+            int opcao = scanner.nextInt();
+            scanner.nextLine();
 
-        if (resposta.equalsIgnoreCase("S")) {
-            System.out.print("Digite o número da linha: ");
-            String numero = scanner.nextLine();
-
-            cadastrarLinha(numero);
+            switch (opcao) {
+                case 1:
+                    listarLogs();
+                    break;
+                case 2:
+                    consultarLogsPorTipo();
+                    break;
+                case 3:
+                    isRunning = false;
+                    LoggerUtil.log("Saindo da aplicação.");
+                    break;
+                default:
+                    System.out.println("Opção inválida.");
+            }
         }
-
-        LoggerUtil.log("Aplicação finalizada.");
     }
 
-    private void listarLinhas() throws Exception {
-        String sql = "SELECT * FROM linhas";
+    private void listarLogs() throws Exception {
+        String sql = "SELECT * FROM log";  // SELECT para listar todos os logs
         PreparedStatement stmt = conn.prepareStatement(sql);
         ResultSet rs = stmt.executeQuery();
 
-        LoggerUtil.log("Linhas de ônibus cadastradas:");
+        LoggerUtil.log("Logs cadastrados:");
 
         while (rs.next()) {
-            String numero = rs.getString("numero");
-            LoggerUtil.log(" - Linha: " + numero);
+            String tipo = rs.getString("tipo");
+            String informacao = rs.getString("informacao");
+            String descricao = rs.getString("descricao");
+            LoggerUtil.log(" - Tipo: " + tipo + " | Informação: " + informacao + " | Descrição: " + descricao);
         }
-
+        System.out.println("\nTodos logs listados.\n");
         rs.close();
         stmt.close();
     }
 
-    private void cadastrarLinha(String numero) throws Exception {
-        String sql = "INSERT INTO linhas (numero) VALUES (?)";
-        PreparedStatement stmt = conn.prepareStatement(sql);
-        stmt.setString(1, numero);
-        stmt.executeUpdate();
+    private void consultarLogsPorTipo() throws Exception {
+        System.out.print("Digite o tipo de log (INFO, ERROR, WARNING): ");
+        String tipo = scanner.nextLine();
 
-        LoggerUtil.log("Linha " + numero + " cadastrada com sucesso.");
+        String sql = "SELECT * FROM log WHERE tipo = ?";
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        stmt.setString(1, tipo);
+        ResultSet rs = stmt.executeQuery();
+
+        LoggerUtil.log("Logs encontrados do tipo '" + tipo + "':");
+
+        while (rs.next()) {
+            String informacao = rs.getString("informacao");
+            String descricao = rs.getString("descricao");
+            LoggerUtil.log(" - Informação: " + informacao + " | Descrição: " + descricao);
+        }
+
+        System.out.println("\nTodos logs listados.\n");
+        rs.close();
         stmt.close();
     }
 }
