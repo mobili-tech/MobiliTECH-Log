@@ -7,6 +7,7 @@ import util.TempoUtil;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Timestamp;
 import java.util.Scanner;
 
 public class AppController {
@@ -83,7 +84,7 @@ public class AppController {
     }
 
     private void listarLogs() throws Exception {
-        String sql = "SELECT * FROM log";  // SELECT para listar todos os logs
+        String sql = "SELECT * FROM log";
         PreparedStatement stmt = conn.prepareStatement(sql);
         ResultSet rs = stmt.executeQuery();
 
@@ -93,9 +94,10 @@ public class AppController {
             String tipo = rs.getString("tipo");
             String informacao = rs.getString("informacao");
             String descricao = rs.getString("descricao");
-            LoggerUtil.log(" - Tipo: " + tipo + " | Informação: " + informacao + " | Descrição: " + descricao);
+            Timestamp data = rs.getTimestamp("data");
+            LoggerUtil.log("Hora: " + data + " | Informação: " + informacao + " | Descrição: " + descricao);
         }
-        System.out.println("\nTodos logs listados.\n");
+
         rs.close();
         stmt.close();
     }
@@ -114,10 +116,10 @@ public class AppController {
         while (rs.next()) {
             String informacao = rs.getString("informacao");
             String descricao = rs.getString("descricao");
-            LoggerUtil.log(" - Informação: " + informacao + " | Descrição: " + descricao);
+            Timestamp data = rs.getTimestamp("data");
+            LoggerUtil.log("Hora: " + data + " | Informação: " + informacao + " | Descrição: " + descricao);
         }
 
-        System.out.println("\nTodos logs listados.\n");
         rs.close();
         stmt.close();
     }
